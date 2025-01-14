@@ -34,14 +34,16 @@ return {
         "lua_ls",
         "rust_analyzer",
         "gopls",
-        "pyright",
+        "jedi_language_server",
       },
       auto_install = true,
       handlers = {
         function(server_name) -- default handler (optional)
-          require("lspconfig")[server_name].setup({
-            capabilities = capabilities,
-          })
+          if server_name ~= "pyright" then
+            require("lspconfig")[server_name].setup({
+              capabilities = capabilities,
+            })
+          end
         end,
 
         zls = function()
@@ -73,7 +75,7 @@ return {
             },
           })
         end,
-        ["pyright"] = function()
+        ["jedi_language_server"] = function()
           local lspconfig = require("lspconfig")
           local function get_python_path(workspace)
             -- Use the workspace's virtual environment if it exists
@@ -85,12 +87,23 @@ return {
             return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
           end
 
-          lspconfig.pyright.setup({
+          lspconfig.jedi_language_server.setup({
             capabilities = capabilities,
             on_new_config = function(config, root)
               config.settings = {
-                python = {
-                  pythonPath = get_python_path(root),
+                workspace = {
+                  environmentPath = get_python_path(root),
+                  symbols = {
+                    ignoreFolders = {
+                      ".nox",
+                      ".tox",
+                      ".env",
+                      ".venv",
+                      "__pycache__",
+                      "venv",
+                      "env",
+                    },
+                  },
                 },
               }
             end,
@@ -132,5 +145,15 @@ return {
         prefix = "",
       },
     })
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition)         -- Go to definition
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration)        -- Go to declaration
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation)     -- Go to implementation
+    vim.keymap.set("n", "gr", vim.lsp.buf.references)         -- Show references
+    vim.keymap.set("n", "K", vim.lsp.buf.hover)               -- Hover documentation
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename)     -- Rename symbol
+    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action) -- Code actions
+    vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float) -- Show diagnostics
+    vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)       -- Go to previous diagnostic
+    vim.keymap.set("n", "]d", vim.diagnostic.goto_next)       -- Go to next diagnostic
   end,
 }

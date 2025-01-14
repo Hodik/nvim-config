@@ -6,6 +6,9 @@ vim.g.mapleader = " "
 vim.g.background = "light"
 
 vim.opt.swapfile = false
+vim.opt.smartindent = true
+vim.opt.scrolloff = 8
+vim.opt.wrap = false
 
 -- Navigate vim panes better
 vim.keymap.set('n', '<c-k>', ':wincmd k<CR>')
