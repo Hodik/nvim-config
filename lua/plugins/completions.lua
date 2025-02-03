@@ -1,9 +1,26 @@
 return {
   {
-    "hrsh7th/cmp-nvim-lsp"
+    "hrsh7th/cmp-nvim-lsp",
   },
   {
-    "github/copilot.vim"
+    "zbirenbaum/copilot.vim",
+    cmd = "Copilot",
+    build = ":Copilot auth",
+    config = function()
+      require("copilot").setup({
+        panel = {
+          enabled = true,
+
+          auto_refresh = true,
+        },
+        suggestion = {
+          enabled = true,
+
+          auto_trigger = true,
+          debounce = 75,
+        },
+      })
+    end,
   },
   {
     "L3MON4D3/LuaSnip",
